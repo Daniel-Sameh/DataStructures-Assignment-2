@@ -33,8 +33,26 @@ public:
 
 
 };
+vector<Item> readItems(string fileName){
+    ifstream file(fileName);
+    string line;
+    getline(file, line);
+    int n= stoi(line);
+    vector<Item>items;
+    while(getline(file,line)){
+        string name=line;
+        getline(file,line);
+        string category=line;
+        getline(file,line);
+        int price= stoi(line);
+        Item i(name,category,price);
+        items.push_back(i);
+    }
+    return items;
+}
+/////////////////////////////////////////////
 
-
+/// A V L TREE
 template<typename T, typename Compare = std::less<T>>
 class node{
 public:
@@ -149,7 +167,8 @@ private:
         }
 
         //Updating the Balance Factor:
-        n->height=1+max(height(n->left), height(n->right));
+        if (n!= nullptr)
+            n->height=1+max(height(n->left), height(n->right));
         int bf= getBalanceFactor(n);
         if (bf>1){
             if (getBalanceFactor(n->left)>=0){
@@ -203,50 +222,207 @@ public:
 
 };
 
+template<typename T,typename Compare = std::less<T>>
+AVL<T,Compare> createAvl() {
+    AVL<T,Compare> avl;
+    return avl;
+}
+template<typename T,typename Compare = std::less<T>>
+void avlOperations(AVL<T,Compare>& a){
+    int op = 10;
+    cout << "Choose one of the operation (0 to exit):\n";
+    while (op) {
+        cout << "     1)Insert all items from the file items.txt.\n";
+        cout << "     2)Insert Item.\n";
+        cout << "     3)Remove Item.\n";
+        cout << "     4)Display Items Ascending\n";
+        cout << "     5)Display Items Descending\n";
+        cin >> op;
+        if (op==1){
+            auto items = readItems("items.txt");
+            for(auto it:items){
+                a.insert(it);
+            }
+        }else if (op==2){
+            string name,category;
+            int price;
+            cout<<"Enter item name: "; cin>>name;
+            cout<<"Enter item category: "; cin>>category;
+            cout<<"Enter item price: "; cin>>price;
+            Item i(name,category,price);
+            a.insert(i);
+        }else if (op==3){
+            string name,category;
+            int price;
+            cout<<"Enter item name: "; cin>>name;
+            cout<<"Enter item category: "; cin>>category;
+            cout<<"Enter item price: "; cin>>price;
+            Item i(name,category,price);
+            a.remove(i);
+        }else if (op==4){
+            a.displayAscending();
+        }else if (op==5){
+            a.displayDescending();
+        }
+    }
+}
+/////////////////////////////////////////////////////
+
+/// H E A P
+const int N = 10000;
+template<typename T,typename Compare = std::less<T>>
+class HeapTree {
+private:
+    T arr[N];
+    int length = 0;
+    Compare comparator;
+public:
+    void max_heapify(int index) {
+        int left = 2 * index + 1;
+        int right = 2 * index + 2;
+        int largest = index;
+
+        if (left < length && comparator(arr[index], arr[left])) {
+            largest = left;
+        }
+        if (right < length && comparator(arr[largest], arr[right])) {
+            largest = right;
+        }
+        if (largest != index) {
+            swap(arr[index], arr[largest]);
+            max_heapify(largest);
+        }
+    }
+
+    void heapify_low(int index) {
+        if (index == 0) {
+            return;
+        }
+        int parent = (index - 1) / 2;
+        if (comparator(arr[parent], arr[index])) {
+            swap(arr[index], arr[parent]);
+            heapify_low(parent);
+        }
+    }
+
+    void insertion(T element) {
+        arr[length] = element;
+        length++;
+        heapify_low(length - 1);
+    }
+
+    void extract_max() {
+        arr[0] = arr[length - 1];
+        length--;
+        max_heapify(0);
+    }
+    void print(){
+        for (int i = 0; i < length; ++i) {
+            cout<<arr[i]<<" ";
+        }
+    }
+    void heapSort()
+    {
+        length-=1;
+        int l=length;
+        for (int i = l; i > 0; i--) {
+            swap(arr[0], arr[i]);
+            max_heapify(0);
+            length-=1;
+        }
+        length=l+1;
+    }
+};
+template<typename T,typename Compare = std::less<T>>
+HeapTree<T,Compare> createHeap() {
+    HeapTree<T,Compare> heap;
+    return heap;
+}
+template<typename T,typename Compare = std::less<T>>
+void heapOperations(HeapTree<T,Compare>& h){
+    int op = 10;
+    cout << "Choose one of the operation (0 to exit):\n";
+    while (op) {
+        cout << "     1)Insert all items from the file items.txt.\n";
+        cout << "     2)Insert Item.\n";
+        cout << "     3)Remove Item.\n";
+        cout << "     4)Display Items Ascending\n";
+        cout << "     5)Display Items Descending\n";
+        cin >> op;
+        if (op==1){
+            auto items = readItems("items.txt");
+            for (auto it: items)
+                h.insertion(it);
+            cout<<"After insertion: ";
+            h.print();
+            cout<<'\n';
+        }else if (op==2){
+            string name,category;
+            int price;
+            cout<<"Enter item name: "; cin>>name;
+            cout<<"Enter item category: "; cin>>category;
+            cout<<"Enter item price: "; cin>>price;
+            Item i(name,category,price);
+            h.insertion(i);
+        }
+    }
+}
 int main() {
-//    node<int>* root= new node(7);
-//    root->left= new node(4);
-//    root->left->left=new node(3);
-//    root->left->left->left= new node(2);
-//    root->left->right= new node(5);
-//    root->right= new node(10);
-//    root->right->left=new node(9);
-//    root->right->right= new node(20);
-    //Testing...
-    AVL<int> avl;
-    avl.insert(5);
-    avl.insert(4);
-    avl.insert(3);
-    avl.insert(8);
-    avl.insert(9);
-    avl.insert(7);
-    avl.remove(8);
-    avl.displayAscending();
-    avl.displayDescending();
-    ifstream file("items.txt");
-    string line;
-    getline(file, line);
-    int n= stoi(line);
-    vector<Item>items;
-    while(getline(file,line)){
-        string name=line;
-        getline(file,line);
-        string category=line;
-        getline(file,line);
-        int price= stoi(line);
-        Item i(name,category,price);
-        items.push_back(i);
-    }
-    AVL<Item,Item::NameComparison> itemsAvl;
-    for(auto it:items){
-        itemsAvl.insert(it);
-    }
-    itemsAvl.displayAscending();
-    cout<<"____________________________\n";
-    itemsAvl.displayDescending();
-    cout<<"____________________________\n";
-//    Item i1("chocolate milk","drink",10),i2("banana","fruit",75),i3("pepsi","drink",20),i4("cheddar cheese","dairy",49),i5("tuna","meat",90);
+    cout<<"Welcome to Our Items Management Program!\n";
+    int type=-1;
+    while (type){
+        if(type==-1) {
+                cout<<"Type the number of the Data Structure you want to use(to exit 0):\n";
+                cout<<" 1)BST(Binary Search Tree)\n";
+                cout<<" 2)AVL\n";
+                cout<<" 3)Heap\n";
 
+        }else if (type==2) {
+            cout << "You chose AVL Tree, please specify how you want to store the items according to:\n";
+            cout << " 1)Item Name.\n";
+            cout << " 2)Item Price.\n";
+            int comp = -1;
+            cin >> comp;
+            while (comp != 1 && comp != 2) {
+                cout << "Enter a valid comparison type: ";
+                cin >> comp;
+            }
+           //AVL<Item> itemsAvl;
+            if (comp==1) {
+                auto itemsAvl = createAvl<Item, Item::NameComparison>();
+                avlOperations(itemsAvl);
+            }else {
+                auto itemsAvl = createAvl<Item, Item::PriceComparison>();
+                avlOperations(itemsAvl);
+            }
+            type=-1;
+            continue;
 
-    cout<<"Testing is done...";
+        }else if(type==1){
+            cout<<"You Chose BST:\n";
+            //Complete this
+        }else if (type==3){
+            cout<<"You Chose Heap, please specify how you want to store the items according to:\n";
+            cout << " 1)Item Name.\n";
+            cout << " 2)Item Price.\n";
+            int comp = -1;
+            cin >> comp;
+            while (comp != 1 && comp != 2) {
+                cout << "Enter a valid comparison type: ";
+                cin >> comp;
+            }
+            if (comp==1) {
+                auto itemsHeap = createHeap<Item, Item::NameComparison>();
+                heapOperations(itemsHeap);
+            }else {
+                auto itemsHeap = createHeap<Item, Item::PriceComparison>();
+                heapOperations(itemsHeap);
+            }
+
+        }else{
+            cout << "Invalid Type! Try Again: ";
+        }
+        cin>>type;
+    }
+
 }
