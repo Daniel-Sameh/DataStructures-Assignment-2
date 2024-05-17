@@ -268,6 +268,140 @@ void avlOperations(AVL<T,Compare>& a){
 }
 /////////////////////////////////////////////////////
 
+/// BST
+template<typename T, typename Compare = std::less<T>>
+class  BST{
+protected:
+    node<T>* root;
+    Compare comparator;
+private:
+    node<T>* insertNode(node<T>* n, T data) {
+        if (n == nullptr) {
+            return new node<T>(data);
+        }
+        if (comparator(data, n->data)) {
+            n->left = insertNode(n->left, data);
+        } else if (comparator(n->data, data)) {
+            n->right = insertNode(n->right, data);
+        } else {
+            return n;
+        }
+        return n;
+    }
+    node<T>* dele(node<T>* root, T key) {
+        if (root == nullptr) return root;
+        else if (comparator(key,root->data))   root->left= dele(root->left,key);
+        else if (comparator(root->data,key))  root->right= dele(root->right,key);
+        else {
+            if(root->left ==NULL && root->right==NULL){
+                delete root;
+                root=NULL;
+            }
+            else if (root->left == nullptr) {
+                node<T>* temp = root->right;
+                delete root;
+                return temp;
+            } else if (root->right == nullptr) {
+                node<T>* temp = root->left;
+                delete root;
+                return temp;
+            } else {
+                node<T>* temp = minValueNode(root->right);
+                root->data = temp->data;
+                root->right = dele(root->right, temp->data);
+            }
+        }
+        return root;
+    }
+    node<T>* minValueNode(node<T>* root) {
+        while(root->left != NULL) root = root->left;
+        return root;
+    }
+    void inorder(node<T>*root){
+        if(root->left){
+            inorder(root->left);
+        }
+        cout<<root->data<<" ";
+        if(root->right){
+            inorder(root->right);
+        }
+
+    }
+    void revorder(node<T>*root){
+        if(root->right){
+            revorder(root->right);
+        }
+        cout<<root->data<<" ";
+        if(root->left){
+            revorder(root->left);
+        }
+    }
+public:
+    BST(){
+        root= nullptr;
+    }
+    BST(node<T>* n):root(n) {}
+    void insert(T data){
+        root= insertNode(root, data);
+    }
+    void displayAscending(){
+        inorder(root);
+        cout<<"\n";
+    }
+    void displayDescending(){
+        revorder(root);
+        cout<<'\n';
+    }
+    void remove(T data){
+        root= dele(root,data);
+    }
+};
+template<typename T, typename Compare = std::less<T>>
+BST<T,Compare> creatBST() {
+    BST<T,Compare> Bst;
+    return Bst;
+}
+template<typename T,typename Compare = std::less<T>>
+void bstOperations(BST<T,Compare>& B){
+    int op = 10;
+    cout << "Choose one of the operation (0 to exit):\n";
+    while (op) {
+        cout << "     1)Insert all items from the file items.txt.\n";
+        cout << "     2)Insert Item.\n";
+        cout << "     3)Remove Item.\n";
+        cout << "     4)Display Items Ascending\n";
+        cout << "     5)Display Items Descending\n";
+        cin >> op;
+        if (op==1){
+            auto items = readItems("items.txt");
+            for(auto it:items){
+                B.insert(it);
+            }
+        }else if (op==2){
+            string name,category;
+            int price;
+            cout<<"Enter item name: "; cin>>name;
+            cout<<"Enter item category: "; cin>>category;
+            cout<<"Enter item price: "; cin>>price;
+            Item i(name,category,price);
+            B.insert(i);
+        }else if (op==3){
+            string name,category;
+            int price;
+            cout<<"Enter item name: "; cin>>name;
+            cout<<"Enter item category: "; cin>>category;
+            cout<<"Enter item price: "; cin>>price;
+            Item i(name,category,price);
+            B.remove(i);
+        }else if (op==4){
+            B.displayAscending();
+        }else if (op==5){
+            B.displayDescending();
+        }
+    }
+}
+/////////////////////////////////////////////////////
+
 /// H E A P
 const int N = 10000;
 template<typename T,typename Compare = std::less<T>>
@@ -408,9 +542,27 @@ int main() {
             type=-1;
             continue;
 
-        }else if(type==1){
-            cout<<"You Chose BST:\n";
-            //Complete this
+        }    else if (type==1) {
+            cout << "You chose BST Tree, please specify how you want to store the items according to:\n";
+            cout << " 1)Item Name.\n";
+            cout << " 2)Item Price.\n";
+            int comp = -1;
+            cin >> comp;
+            while (comp != 1 && comp != 2) {
+                cout << "Enter a valid comparison type: ";
+                cin >> comp;
+            }
+
+            if (comp==1) {
+                auto itemsBST = creatBST<Item, Item::NameComparison>();
+                bstOperations(itemsBST);
+            }else {
+                auto itemsBST = creatBST<Item, Item::PriceComparison>();
+                bstOperations(itemsBST);
+            }
+            type=-1;
+            continue;
+
         }else if (type==3){
             cout<<"You Chose Heap, please specify how you want to store the items according to:\n";
             cout << " 1)Item Name.\n";
