@@ -346,8 +346,8 @@ void heapOperations(HeapTree<T,Compare>& h){
         cout << "     1)Insert all items from the file items.txt.\n";
         cout << "     2)Insert Item.\n";
         cout << "     3)Remove Item.\n";
-        cout << "     4)Display Items Ascending\n";
-        cout << "     5)Display Items Descending\n";
+        cout << "     4)Display Items Max heap sort\n";
+        cout<<  "     5) print the tree "<<endl;
         cin >> op;
         if (op==1){
             auto items = readItems("items.txt");
@@ -365,6 +365,16 @@ void heapOperations(HeapTree<T,Compare>& h){
             Item i(name,category,price);
             h.insertion(i);
         }
+        else if(op==3){
+            h.extract_max();
+        }
+        else if(op==4){
+            h.heapSort();
+            h.print();
+        }
+        else if(op==5){
+            h.print();
+        }
     }
 }
 int main() {
@@ -372,11 +382,11 @@ int main() {
     int type=-1;
     while (type){
         if(type==-1) {
-                cout<<"Type the number of the Data Structure you want to use(to exit 0):\n";
-                cout<<" 1)BST(Binary Search Tree)\n";
-                cout<<" 2)AVL\n";
-                cout<<" 3)Heap\n";
-
+            cout<<"Type the number of the Data Structure you want to use(to exit 0):\n";
+            cout<<" 1)BST(Binary Search Tree)\n";
+            cout<<" 2)AVL\n";
+            cout<<" 3)Heap\n";
+            cin>>type;
         }else if (type==2) {
             cout << "You chose AVL Tree, please specify how you want to store the items according to:\n";
             cout << " 1)Item Name.\n";
@@ -387,7 +397,7 @@ int main() {
                 cout << "Enter a valid comparison type: ";
                 cin >> comp;
             }
-           //AVL<Item> itemsAvl;
+            //AVL<Item> itemsAvl;
             if (comp==1) {
                 auto itemsAvl = createAvl<Item, Item::NameComparison>();
                 avlOperations(itemsAvl);
@@ -422,7 +432,7 @@ int main() {
         }else{
             cout << "Invalid Type! Try Again: ";
         }
-        cin>>type;
+
     }
 
 }
