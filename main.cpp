@@ -511,115 +511,6 @@ void heapOperations(HeapTree<T,Compare>& h){
         }
     }
 }
-//////////////////////////MinHeap/////////////////////////////////////
-template<typename T,typename Compare = std::less<T>>
-class MinHeapTree{
-private:
-    T arr[N];
-    int length = 0;
-    Compare comparator;
-public:
-    void Min_heapify(int index) {
-        int left = 2 * index + 1;
-        int right = 2 * index + 2;
-        int smallest = index;
-
-        if (left < length && comparator(arr[left], arr[index])) {
-            smallest = left;
-        }
-        if (right < length && comparator(arr[right], arr[smallest])) {
-            smallest = right;
-        }
-        if (smallest != index) {
-            swap(arr[index], arr[smallest]);
-            Min_heapify(smallest);
-        }
-    }
-
-    void heapify_low(int index) {
-        if (index == 0) {
-            return;
-        }
-        int parent = (index - 1) / 2;
-        if (comparator(arr[index], arr[parent])) {
-            swap(arr[index], arr[parent]);
-            heapify_low(parent);
-        }
-    }
-
-    void insertion(T element) {
-        arr[length] = element;
-        length++;
-        heapify_low(length - 1);
-    }
-
-    void extract_min() {
-        arr[0] = arr[length - 1];
-        length--;
-        Min_heapify(0);
-    }
-    void print(){
-        for (int i = 0; i < length; ++i) {
-            cout<<arr[i]<<" ";
-        }
-    }
-    void heapSort()
-    {
-        length-=1;
-        int l=length;
-        for (int i = l; i > 0; i--) {
-            swap(arr[0], arr[i]);
-            Min_heapify(0);
-            length-=1;
-        }
-        length=l+1;
-    }
-};
-
-//functions for min heap
-template<typename T,typename Compare = std::less<T>>
-MinHeapTree<T,Compare> createMinHeap() {
-    MinHeapTree<T,Compare> heap;
-    return heap;
-}
-template<typename T,typename Compare = std::less<T>>
-void MinheapOperations(MinHeapTree<T,Compare>& h){
-    int op = 10;
-    cout << "Choose one of the operation (0 to exit):\n";
-    while (op) {
-        cout << "     1)Insert all items from the file items.txt.\n";
-        cout << "     2)Insert Item.\n";
-        cout << "     3)Remove Item.\n";
-        cout << "     4)Display Items Descending\n";
-        cout << "     5)Print Tree\n";
-        cin >> op;
-        if (op==1){
-            auto items = readItems("items.txt");
-            for (auto it: items)
-                h.insertion(it);
-            cout<<"After insertion: ";
-            h.print();
-            cout<<'\n';
-        }else if (op==2){
-            string name,category;
-            int price;
-            cout<<"Enter item name: "; cin>>name;
-            cout<<"Enter item category: "; cin>>category;
-            cout<<"Enter item price: "; cin>>price;
-            Item i(name,category,price);
-            h.insertion(i);
-        }else if(op == 3){
-            h.extract_min();
-        }else if(op == 4){
-            h.heapSort();
-            h.print();
-        }else if(op == 5){
-            h.print();
-        }else{
-            cout<<"Enter a valid number\n";
-        }
-    }
-}
 int main() {
     cout<<"Welcome to Our Items Management Program!\n";
     int type=-1;
@@ -628,8 +519,7 @@ int main() {
             cout<<"Type the number of the Data Structure you want to use(to exit 0):\n";
             cout<<" 1)BST(Binary Search Tree)\n";
             cout<<" 2)AVL\n";
-            cout<<" 3)Max Heap\n";
-            cout<<" 4)Min Heap\n";
+            cout<<" 3)Heap\n";
             cin>>type;
         }else if (type==2) {
             cout << "You chose AVL Tree, please specify how you want to store the items according to:\n";
@@ -690,23 +580,7 @@ int main() {
                 auto itemsHeap = createHeap<Item, Item::PriceComparison>();
                 heapOperations(itemsHeap);
             }
-            else if(type == 4) {
-            cout<<"You Chose Min Heap, please specify how you want to store the items according to:\n";
-            cout << " 1)Item Name.\n";
-            cout << " 2)Item Price.\n";
-            int comp = -1;
-            cin >> comp;
-            while (comp != 1 && comp != 2) {
-                cout << "Enter a valid comparison type: ";
-                cin >> comp;
-            }
-            if (comp==1) {
-                auto itemsHeap = createMinHeap<Item, Item::NameComparison>();
-                MinheapOperations(itemsHeap);
-            }else {
-                auto itemsHeap = createMinHeap<Item, Item::PriceComparison>();
-                MinheapOperations(itemsHeap);
-            }
+
         }else{
             cout << "Invalid Type! Try Again: ";
         }
